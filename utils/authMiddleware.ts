@@ -1,10 +1,11 @@
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-const AppError = require("./AppError");
+import {jwt} from "jsonwebtoken";
+import dotenv from "dotenv";
+import express, { Request, Response, NextFunction } from "express";
+import AppError from "./AppError";
 
 dotenv.config();
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) throw new AppError("Token manquant", 401);

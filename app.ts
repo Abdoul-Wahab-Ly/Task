@@ -1,9 +1,6 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const authRoutes = require("./routes/auth.routes");
-const taskRoutes = require("./routes/task.routes");
-const errorHandler = require("./utils/errorHandler");
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
 
 const app = express();
 

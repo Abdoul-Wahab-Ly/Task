@@ -1,22 +1,23 @@
 {
-  "name": "task",
+  "name": "node-express-prisma-boilerplate",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "app.js",
+  "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node ./dist/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@prisma/client": "^7.2.0",
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "nodemon": "^3.1.11",
-    "prisma": "^7.2.0"
+    "@prisma/client": "^6.0.0",
+    "express": "^5.1.0"
   }
 }

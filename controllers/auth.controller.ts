@@ -1,9 +1,10 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const prisma = require("../prisma");
-const AppError = require("../utils/AppError");
+import bcrypt from "bcryptjs";
+import { jwt } from "jsonwebtoken";
+import AppError from "../utils/AppError.js";
+import prisma from "prisma.ts";
+import { Request, Response, NextFunction } from "express";
 
-const signup = async (req, res, next) => {
+const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) throw new AppError("Champs vide", 400);
@@ -19,7 +20,7 @@ const signup = async (req, res, next) => {
   }
 };
 
-const signin = async (req, res, next) => {
+const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
@@ -37,4 +38,4 @@ const signin = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, signin };
+export default { signup, signin };
