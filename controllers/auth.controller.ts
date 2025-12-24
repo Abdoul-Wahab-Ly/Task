@@ -1,23 +1,35 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import AppError from "../utils/AppError.js";
-import prisma from "prisma";
+import prisma from "../prisma";
 import { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
+import AppError from "../utils/AppError";
+import {
+  validateurEmail,
+  validateurPassword,
+  validateurSignin,
+} from "../utils/validation";
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) throw new AppError("Champs vide", 400);
+
+    // Validations de format
+    if (!name) throw new AppError("Le nom est obligatoire", 400);
+    validateurEmail(email);
+    validateurPassword(password);
+
+    //
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new AppError("Cet email est déjà utilisé", 400);
 
     const hash = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { name, email, password: hash },
     });
 
-    res.status(201).json(user);
+    const { password: _, ...userWithoutPassword } = user;
+    res.status(201).json(userWithoutPassword);
   } catch (err) {
     next(err);
   }
@@ -26,16 +38,28 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
+
+    // Validation de présence et de format
+    validateurSignin(email, password);
+
+    // Recherche de l'utilisateur
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new AppError("Utilisateur invalide", 401);
+
+    // Vérification de l'utilisateur et du mot de passe
+    // On utilise le même message d'erreur pour les deux cas
+    if (!user) {
+      throw new AppError("Email ou mot de passe incorrect", 401);
+    }
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) throw new AppError("Mot de passe invalide", 401);
+    if (!valid) {
+      throw new AppError("Le mot de passe incorrect", 401);
+    }
 
-    // @ts-ignore
-    const token = jwt.sign({ id: user.id }, process.env.SECRECT_KEY, {
-      expiresIn: "1h",
-    });
+    //Génération du token
+    const secret = process.env.SECRET_KEY!;
+    const token = jwt.sign({ id: user.id }, secret, { expiresIn: "1h" });
+
     res.json({ token });
   } catch (err) {
     next(err);
