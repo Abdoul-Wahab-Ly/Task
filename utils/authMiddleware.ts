@@ -1,4 +1,4 @@
-import {jwt} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import AppError from "./AppError";
@@ -13,12 +13,14 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const [, token] = authHeader.split(" ");
     if (!token) throw new AppError("Token invalide", 401);
 
+    let { userId } = req.body;
+    // @ts-ignore
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.userId = decoded.id;
+    userId = decoded.id;
     next();
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

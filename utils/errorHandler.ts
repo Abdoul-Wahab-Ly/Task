@@ -12,4 +12,4 @@ const errorHandler = (
   });
 };
 
-export default { errorHandler };
+export default errorHandler;

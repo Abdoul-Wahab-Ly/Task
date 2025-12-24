@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs";
-import { jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import AppError from "../utils/AppError.js";
-import prisma from "prisma.ts";
+import prisma from "prisma";
 import { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,7 +32,8 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new AppError("Mot de passe invalide", 401);
 
-    const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+    // @ts-ignore
+    const token = jwt.sign({ id: user.id }, process.env.SECRECT_KEY, {
       expiresIn: "1h",
     });
     res.json({ token });
